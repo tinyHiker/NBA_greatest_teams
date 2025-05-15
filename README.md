@@ -2,17 +2,17 @@
 
 A mini‑project that answers three classic basketball questions using pure SQL and an open Kaggle dataset.
 
-| Question                                                                 | Quick answer provided by this repo                                |
+| Question                                                                 | Answer                               |
 | ------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| **1. Lifetime record** – How many games has each franchise won and lost? | `queries/game_stats_queries.sql` → section **4**                  |
-| **2. Best single‑season record**                                         | `queries/game_stats_queries.sql` → section **5** (order **DESC**) |
-| **3. Worst single‑season record**                                        | same query, ordered **ASC**                                       |
+|  1. Which franchise has won the most games all-time?                     | Boston Celtics                                                    |
+|  2. Which franchise had the best single-season record?                   | The 2015 Golden State Warriors |
+|  3. Whihc franchise had the worst single-season record?                  | The 2011 Charlotte Bobcats                                       |
 
 ---
 
-## 1  Dataset
+## Dataset
 
-* **Source**: [Kaggle – NBA Games History](kaggle‑url‑here)
+* **Source**: [Kaggle – NBA Database](https://www.kaggle.com/datasets/wyattowalsh/basketball/data)
 * **Original form**: \~20 CSV files (games, teams, players, etc.)
 * **Table used here**: **`GAME`** – one row per game with results for both teams.
 
@@ -26,7 +26,7 @@ A mini‑project that answers three classic basketball questions using pure SQL 
 | `SEASON_ID`      | `"S2019"`          | Kaggle’s season code |
 | `SEASON_TYPE`    | `"Regular Season"` | filters out playoffs |
 
-## 2  Import workflow
+## Import workflow
 
 1. **Download CSVs** from Kaggle.
 2. **Oracle SQL Developer ▶ Tools ▶ Import Data** → target table `GAME`.
@@ -34,73 +34,12 @@ A mini‑project that answers three classic basketball questions using pure SQL 
 
 *(On a fresh Oracle 21c XE install the whole import fits comfortably in the default USERS tablespace.)*
 
-## 3  Analysis approach
 
-> 100 % **ad‑hoc SQL** – no stored procedures, no BI tool, just worksheets.
+## Question 1 Result
+![Alt text for screen readers](/images/Question1Result.png)
 
-```mermaid
-flowchart TD
-    subgraph CTE season_record
-        GAME -- filter/summarise --> season_record
-    end
-    season_record --> Q5[Season Win %]
-    GAME --> Q2[Home Wins]
-    GAME --> Q3[Total Wins]
-    GAME --> Q4[W/L Totals]
-```
+## Question 2 Result
+![Alt text for screen readers](/images/Question2Answer.png)
 
-* **Common Table Expression (`season_record`)**: flattens home & away results into one union for per‑season stats.
-* All other queries read the base `GAME` table directly or reuse the CTE in‑memory.
-
-## 4  Running the queries
-
-```bash
--- open a worksheet connected to your PDB/schema
-@queries/game_stats_queries.sql
-```
-
-SQL Developer displays each SELECT in a separate grid.
-
-### Getting the "best" or "worst" season quickly
-
-```sql
--- Best season (highest win‑pct)
-WITH ...  -- identical CTE
-ORDER BY win_pct DESC FETCH FIRST 1 ROW ONLY;
-
--- Worst season (lowest win‑pct)
-ORDER BY win_pct ASC  FETCH FIRST 1 ROW ONLY;
-```
-
-## 5  Results snapshot *(as of dataset download)*
-
-| Team               | All‑time Wins | All‑time Losses |
-| ------------------ | ------------: | --------------: |
-| Boston Celtics     |          3606 |            2469 |
-| Los Angeles Lakers |          3476 |            2595 |
-| …                  |             … |               … |
-
-> *Best single season*: **Golden State Warriors 2016 – 73‑9 (0.890)**
-> *Worst single season*: **Charlotte Bobcats 2012 – 7‑59 (0.106)**
-
-*(Numbers may differ if Kaggle updates the dataset.)*
-
-## 6  Folder structure
-
-```
-.
-├── README.md                ← you are here
-├── queries/
-│   └── game_stats_queries.sql
-└── data/                    ← raw CSVs from Kaggle (ignored by Git)
-```
-
-## 7  Next steps / ideas
-
-* Automate CSV → Oracle load with SQL\*Loader or external tables.
-* Create materialised views for faster season summaries.
-* Visualise results in a lightweight dashboard (e.g., Apache Superset or a simple Python notebook).
-
----
-
-© 2025 Your Name – MIT License
+## Question 3 Result
+![Alt text for screen readers](/images/Question3Answer.png)
